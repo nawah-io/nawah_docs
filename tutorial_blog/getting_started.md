@@ -5,7 +5,7 @@
 ## 1. Getting Started
 To start with using Nawah you need to have:
 1. [Python](https://www.python.org/) 3.8
-2. [MongoDB](https://www.mongodb.com/) 4.x+
+2. [MongoDB](https://www.mongodb.com/) 4.2+
 
 You can install the previous prerequisites using your operating system package manage, or from their website.
 
@@ -14,7 +14,10 @@ You can install the previous prerequisites using your operating system package m
 
 If you, for any reason, can't install both or either of the components, or you prefer to keep your computer clean without installing additional components then you can benefit from running a custom [`code-server`](https://github.com/codercom/code-server) that can be used to develop Nawah apps by running [`docker-composer`](https://docs.docker.com/compose) tailor-made for this purpose.
 
-To begin, clone [https://github.com/nawah-io/nawah-code-server](https://github.com/nawah-io/nawah-code-server) and then run `docker-compose up -d` from the clone directory.
+To begin:
+1. clone [https://github.com/nawah-io/nawah-code-server](https://github.com/nawah-io/nawah-code-server),
+2. edit `PASSWORD` value in `docker-compose.yml` file, and;
+3. then run `docker-compose up -d` from the clone directory.
 
 Then, navigate to `https://localhost:8080` in your browser. Enter the password set in your `docker-compose.yml` file. You will be greeted with "Code - OSS" welcome screen. Now, you can follow the tutorial by opening up terminal using `Ctrl+Back-Tick`.
 
