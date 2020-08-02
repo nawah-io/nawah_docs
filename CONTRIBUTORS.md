@@ -23,6 +23,9 @@ This section enlists contributors who helped shaping Nawah with their feedback o
 ## Knowledge Contributors
 This section enlists persons who helped developing the knowledge surrounding the development of Nawah. This is a token of gratitude to those who didn't spare an effort to share knowledge with others without expecting anything in return!
 
+* Jim Kelly
+   * Github: https://github.com/jimjkelly
+
 * Chaim Kirby
 
 * Sean Stewart
