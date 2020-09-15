@@ -44,7 +44,7 @@ class BlogComment(BaseModule):
 
 Though the module looks mostly familiar in structure, some elements are not, which are:
 #### `attrs[...]`
-In addition to what you learnt earlier on `create_time Special Attr`, you can see different `Attrs Types` this time. You can learn more on each from 
+In addition to what you learnt earlier on `create_time Special Attr`, you can see different `Attrs Types` this time. You can learn more on each from reference for [`ATTR Controller`](/reference/controllers/ATTR.md)
 
 ### Comment front-end
 

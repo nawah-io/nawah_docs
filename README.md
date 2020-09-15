@@ -10,34 +10,38 @@ This is home to docs on using [Nawah CLI](https://github.com/nawah-io/nawah_cli)
   1. [Personal Blog App (aka Hello, World!)](./tutorial_blog/README.md)
   2. Magazine App
   3. Social Network
+* Under the Hood:
+  1. Launching App
+  2. Handling Connection
+  3. Handling Calls
+  4. Jobs Workflow
 * Best Practices:
-  1. Naming Conventions
-  2. Packaging Modules
-  3. Building Front-end
+  * Naming Conventions
+  * Packaging Modules
+  * Building Front-end
 * Reference:
-  1. App Config
-  2. Package Config
-  3. Module
-  4. Method
-  5. Controllers:
-    1. Query
-    2. L10N
-    3. ATTR
-    4. ATTR_MOD
-    5. PERM
-    6. EXTN
-    7. CACHE
-    8. ANALYTIC
-* Testing
-  1. Testing Workflow
-  2. Writing Tests for Personal Blog App
-  3. Integrating Tests with Continuous Integration
-  3. Testing Controllers:
-    1. TEST
-    2. STEP
-    3. CALC
-    4. CAST
-    5. JOIN
+  * App
+  * Package
+  * Module
+  * Method
+  * Controllers:
+    * Query
+    * L10N
+    * [ATTR](/reference/controllers/ATTR.md)
+    * ATTR_MOD
+    * PERM
+    * EXTN
+    * CACHE
+    * ANALYTIC
+* Testing Workflow
+  * Writing Tests for Personal Blog App
+  * Integrating Tests with Continuous Integration
+  * Testing Controllers:
+    * TEST
+    * STEP
+    * CALC
+    * CAST
+    * JOIN
 * [Contributors](./CONTRIBUTORS.md)
 
 ## License

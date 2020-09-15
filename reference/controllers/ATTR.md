@@ -12,7 +12,7 @@ All `attrs` types can be defined by using the helper methods in `ATTR` controlle
 An attr with this type means it can have any value, ultimately skipping type-check on it altogether.
 
 ## `ACCESS`
-An attr with this type defines a [`DICT`](/api/ATTR.md#dict)-type with attributes `users` a list of `ObjectId` referring to users who have access to specific doc, `groups` a list of `ObjectId` referring to groups who have access to specific doc, `anon` a boolean set to `True` or `False` to refer whether anonymous users have access to specific doc.
+An attr with this type defines a [`TYPED_DICT`](#typed_dict)-type with attributes `users` a list of `ObjectId` referring to users who have access to specific doc, `groups` a list of `ObjectId` referring to groups who have access to specific doc, `anon` a boolean set to `True` or `False` to refer whether anonymous users have access to specific doc.
 
 ## `ID`
 An attr with this type means it has to have `ObjectId`. This is usually the type set for attr that has the `_id` value of another doc from the same module or another. Nawah type-check step for this type includes converting `str` type to `ObjectId` if valid, allowing developers to pass `str` values to `attrs` with type `ID`.
@@ -84,34 +84,64 @@ Option `min` of type `LIST` specifies minimum number of values required in the a
 ### `LIST`:max
 Option `max` of type `LIST` specifies maximum number of values in the attr list.
 
-## `DICT`
-Type `DICT` matches native Python `dict` type. Type `DICT` requires option `dict` which specifies the structure of the accepted `dict` for the attr.
-
-### `DICT`:dict
-Option `dict` of type `DICT` can be be used to specify the accepted `dict` for the attr in two methods:
-
-#### key-value dict
-Developers can use this method to define `DICT` that accepts any Python `dict` with specific `__key`, `__val` types. e.g. `DICT` attr can be set to
+## `KV_DICT`
+Type `KV_DICT` is used to define attr that accepts any Python `dict` with specific `key`, `val` types. e.g. `KV_DICT` attr can be set to
 ```python
-ATTR.DICT(dict={
-	'__key':ATTR.STR(),
-	'__val':ATTR.INT()
-})
+ATTR.KV_DICT(
+	key=ATTR.STR(),
+	val=ATTR.INT()
+)
 ```
-to accept any `dict` with its keys as strings, and values as integers. Further more, developers can specify `__min`, and `__max` to specify minimum and maximum number of attributes in `dict`. Also, developers can specify `__req`, a list of strings specifying required keys, which can help developers create type checks for `DICT` attrs with required and optional keys.
+to accept any `dict` with its keys as strings, and values as integers. Further more, there are more options available to control `KV_DICT` type.
 
-> Note JSON objects which are the format of MongoDB docs; The single unit of data in the database, does only accept strings as keys to objects, thus, `DICT` attrs with type other than `STR`, `LITERAL` will raise `InvalidAttrTypeArgException` at time of Nawah app launch.
+### `KV_DICT`:key
+Option `key` of type `KV_DICT` specifies accepted type of the keys of Python `dict` to be used as value of the attr. Note, since values of attrs with type `KV_DICT` would be translated into JSON objects when passed to MongoDB, option `key` does only accept strings as keys to objects, thus, `KV_DICT`-typed attrs with option `key` other than `STR`, `LITERAL` will raise `InvalidAttrTypeArgException` at time of Nawah app launch.
 
-#### typed-dict
-Developers can use this method to define `DICT` the accepts Python `dict` with specific attributes, and respective types. e.g. `DICT` attr can be set to:
+### `KV_DICT`:val
+Option `val` of type `KV_DICT` specifies accepted type of the values of Python `dict` to be used as value of the attr.
+
+### `KV_DICT`:min
+Option `min` of type `KV_DICT` specifies minimum number of items of Python `dict` to be used as value of the attr. This option is optional. Not setting it will not force any minimum which allow empty Python `dict` to be accepted.
+
+### `KV_DICT`:max
+Option `max` of type `KV_DICT` specifies maximum number of items of Python `dict` to be used as value of the attr. This option is optional. Not setting it will not force any maximum which would allow any number of items.
+
+### `KV_DICT`:req
+Option `max` of type `KV_DICT` specifies the required keys of Python `dict` as list of strings. This option allows developers to have free-form Python `dict` as values to `KV_DICT`, but still maintain required keys. e.g.
 ```python
-ATTR.DICT(dict={
+ATTR.KV_DICT(
+	key=ATTR.STR(),
+	val=ATTR.ANY(),
+	req=['key_a', 'key_b']
+)
+```
+would accept the following values:
+```python
+{'key_a': 'val', 'key_b', 'val'}
+{'key_a': 'val', 'key_b', 'val', 'key_c', 'val'}
+{'key_a': 'val', 'key_b', 'val', 'foo': 'bar', 'foobar': 'baz'}
+```
+but not:
+```python
+{'key_a': 'val'} # Missing required key 'key_b'
+{'key_b', 'val'} # Missing required key 'key_a'
+{'key_a': 'val', 'key_c', 'val'} # Missing required key 'key_b'
+{'key_b', 'val', 'foo': 'bar', 'foobar': 'baz'}  # Missing required key 'key_a'
+```
+
+## `TYPED_DICT`
+Type `TYPED_DICT` is used to define attr that accepts any Python `dict` with specific attributes, and respective types. e.g. `TYPED_DICT` attr can be set to:
+```python
+ATTR.TYPED_DICT(dict={
 	'event':ATTR.STR(),
 	'trigger':ATTR.ID(),
 	'notes':ATTR.LOCALE()
 })
 ```
 to accept only `dict` that has the keys `event`, `trigger`, and `notes` along the correct type for every attribute.
+
+### `TYPED_DICT`:dict
+Option `dict` of type `TYPED_DICT` specifies the keys which are expected to be existing in Python `dict` used as value to the attr, along the types of each key.
 
 ## `LITERAL`
 Type `LITERAL` is used to define set of options for the attr. Options are passed as option `literal`, a list of strings, integers, floats, or booleans. Any other value not from `literal` option list would be considered wrong value. e.g. `Shipment` module with attr `status` can have the type `LITERAL` as `ATTR.LITERAL(literal=['at-warehouse', 'shipped', 'received', 'cancelled'])` to only accept either of the values supplied in `literal` option.
@@ -133,16 +163,16 @@ to allow it to only accept attachment of either of the types supplied in `union`
 Option `union` of type `UNION` contains all allowed types for the attr.
 
 ## `TYPE`
-Developers can define Nawah apps-specific attrs types as part of (Nawah packages)[/api/package.md] (configs)[/api/config.md]. Attrs types should go along (`types` Config Attr)[/api/config.md#types] as Python `dict`, with the keys being the attrs types, and values being Python `callables` that returns the value as-is or converted, or raises one of the [Attrs Types Exceptions](#attrs-types-exceptions).
+Developers can define Nawah apps-specific attrs types as part of [Package Config](/reference/package.md#config).
 
 ## Attrs Types Exceptions
 The sequence of data validation and type-check in Nawah works using two functions located in `utils` Python module of Nawah. The functions are `validate_doc`, and `validate_attr`. At the event of any failure these functions would raise one of the three attrs types Exceptions:
 
 ### MissingAttrException
-In cases where Nawah is matching set of data against (`Attrs`)[/api/module.md#attrs] or (GET methods `query_args`)[/api/method.md#query_args] that require all `attrs` to be defined, if any is missing exception `MissingAttrException` would be raised. The exception has only one attribute `attr_name` which can be used to determine which `attr` is missing.
+In cases where Nawah is matching set of data against [`attrs`](/reference/module.md#attrs) or [GET methods `query_args`](/reference/method.md#query_args) that require all `attrs` to be defined, if any is missing exception `MissingAttrException` would be raised. The exception has only one attribute `attr_name` which can be used to determine which `attr` is missing.
 
 ### InvalidAttrException
 In case where Nawah find a type mismatch, exception `InvalidAttrException` would be raised. The exception has three attributes `attr_name`, `attr_type`, `val_type` which respectively refer to `attr` name, expected type, and actual value of the `attr`.
 
 ### ConvertAttrException
-In few cases, Nawah would accept a type as another and converts it. This was introduced to allow developers from easily passing data types that might be not possible to via (requests)[/api/request.md], mainly for binary data. e.g. this allows Nawah to validate `attr` of (type `ID`)[#id] as `str` value and converts it to `ObjectId`. If the passed value is of the acceptable type, i.e. `str`, but failed to convert to actual type, i.e. `ID`, exception `ConvertAttrException` would be raised. The exception has three attributes `attr_name`, `attr_type`, `val_type` which respectively refer to `attr` name, expected type, and actual value of the `attr`.
+In few cases, Nawah would accept a type as another and converts it. This was introduced to allow developers to easily passing data types that might be not possible via [client apps calls](/under_hood/handling_calls.md), mainly for binary data. e.g. this allows Nawah to validate [Attr Type `ID`](#id)-typed `attr` as Python `str` value and converts it to `ObjectId`. If the passed value is of the acceptable type, i.e. `str`, but failed to convert to actual type, i.e. `ID`, exception `ConvertAttrException` would be raised. The exception has three attributes `attr_name`, `attr_type`, `val_type` which respectively refer to `attr` name, expected type, and actual value of the `attr`.
