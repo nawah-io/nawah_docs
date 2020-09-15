@@ -29,7 +29,7 @@ Yes! No more dealing with custom handlers for multi-language apps. Your app is m
 Nawah Cache Workflow gives developers the power to cache queries without having a hassle. Simple instructions, and condition checkers and developers get apps with dynamic cache feature.
 
 ## The Cron we All Like!
-Nawah has Cron-like Jobs Workflow that allows developers to run background tasks using Cron timing expression. The jobs can be Nawah calls, or simple Python function that can be run for any purpose.
+Nawah has Cron-like Jobs Workflow that allows developers to run background tasks using Cron timing expression. The jobs can be Nawah calls or simple Python function that can be run for any purpose.
 
 ## Analytics that just Work
-Nawah offers module-level Analytics Workflow that allow you developers to insert sample instructions which generate `Analytic` docs which can be later used programmatically by other modules, or for handy data researches.
+Nawah offers module-level Analytics Workflow that allow you developers to insert sample instructions which generate `Analytic` docs which can be later used programmatically by other modules or for handy data researches.

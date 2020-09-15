@@ -126,7 +126,7 @@ then, refer to [./writing_blog_module.md#connecting-to-api](./writing_blog_modul
 2020-08-01 07:21:44,285  [DEBUG]  Connection on session #'3' is verified.
 ```
 
-If your browser console is showing any errors, confirm whether these errors are related to `ng-nawah`, or another element. If it's related to `ng-nawah` confirm again your `API_URI`, and `ANON_TOKEN` values.
+If your browser console is showing any errors, confirm whether these errors are related to `ng-nawah` or another element. If it's related to `ng-nawah` confirm again your `API_URI`, and `ANON_TOKEN` values.
 
 You can now make calls as you did in Nawah Sandbox to read blog posts. To do so, go to `home.component.ts`, and add the following definitions methods:
 ```typescript
@@ -262,7 +262,7 @@ import { FormsModule } from '@angular/forms';
   ],
 ```
 
-Now, is your moment of truth--Start the development server and navigate to `http://localhost:4200/admin`, or equivalent. You shall be redirected to `/admin/login`, which looks like [https://getbootstrap.com/docs/4.5/examples/sign-in/](https://getbootstrap.com/docs/4.5/examples/sign-in/). Attempt to type any email address and the password `123456` and submit the form for testing it. You will see an alert message as:
+Now, is your moment of truth--Start the development server and navigate to `http://localhost:4200/admin` or equivalent. You shall be redirected to `/admin/login`, which looks like [https://getbootstrap.com/docs/4.5/examples/sign-in/](https://getbootstrap.com/docs/4.5/examples/sign-in/). Attempt to type any email address and the password `123456` and submit the form for testing it. You will see an alert message as:
 ```
 Error: Password should be 8 chars, contains one lower-case char, one upper-case char, one number at least.
 ```
