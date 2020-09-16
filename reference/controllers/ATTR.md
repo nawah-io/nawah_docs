@@ -21,13 +21,13 @@ An attr with this type means it has to have `ObjectId`. This is usually the type
 Self-descriptive string type. Accepts anything that is a string.
 
 ### `STR`:pattern
-Option `pattern` of type `STR` allows developers to force custom pattern check by passing a Python format regexp.
+Optional argument `pattern` of type `STR` allows developers to force custom pattern check by passing a Python format regexp.
 
 ## `INT`
 Self-descriptive integer type. Accepts anything that is an integer.
 
 ### `INT`:range
-Option `range` of type `INT` allows developers to force custom range check by passing a list of integers referring to Python range in format `[BEGIN, END[, STEP]]`, meaning `BEGIN` is inclusive, but `END` is exclusive. e.g. `[1, 10]` matches anything from inclusive `1` to exclusive `10`, and `[0, 11, 2]` matches all even numbers from `1` to `10` all-inclusive.
+Optional argument `range` of type `INT` allows developers to force custom range check by passing a list of integers referring to Python range in format `[BEGIN, END[, STEP]]`, meaning `BEGIN` is inclusive, but `END` is exclusive. e.g. `[1, 10]` matches anything from inclusive `1` to exclusive `10`, and `[0, 11, 2]` matches all even numbers from `1` to `10` all-inclusive.
 
 ## `BOOL`
 Self-descriptive boolean type. Accepts anything that is a boolean.
@@ -46,7 +46,7 @@ Self-descriptive phone type. Accepts a string that matches the regexp `^\+[0-9]+
 HERE HERE HERE
 
 ### `PHONE`:codes
-Option `codes` of type `PHONE` allows developers to set specific accepted codes for attr in form of list of codes. e.g. `['971', '966', '1']`
+Optional argument `codes` of type `PHONE` allows developers to set specific accepted codes for attr in form of list of codes. e.g. `['971', '966', '1']`
 
 ## `IP`
 Self-descriptive IP[v4] type. Accepts a string that matches the regexp `^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$` in Python.
@@ -67,7 +67,7 @@ Self-descriptive time type. Accepts Python `time` ISO format value which matches
 Self-descriptive file type. Accepts a Python `dict` that has the file attributes as required by Nawah which are: `name`, `size`, `type`, `lastModified` and `content`.
 
 ### `FILE`:types
-Option `types` of type `FILE` allows developers to specify list of accepted file MIME types for the attr in form of list of accepted files MIME types. e.g. `['image/*', 'video/*']` will allow all files which are `image` and `video`, or `['image/ong']` will allow only JPEG images.
+Optional argument `types` of type `FILE` allows developers to specify list of accepted file MIME types for the attr in form of list of accepted files MIME types. e.g. `['image/*', 'video/*']` will allow all files which are `image` and `video`, or `['image/ong']` will allow only JPEG images.
 
 ## `GEO`
 A GeoJSON-compatible `Point` type in the form of Python `dict` with  attributes `type` set always to `'Point'`, `coordinates` a list of integers/floats representing longitude, latitude in sequence. 
@@ -76,13 +76,13 @@ A GeoJSON-compatible `Point` type in the form of Python `dict` with  attributes 
 Type `LIST` is used to define list of other types. e.g. `Blog` module, can have the `tag` attr set to `ATTR.LIST(list=[ATTR.STR()])` to flag that it accepts list of strings. You can pass more than one type in the list to allow multiple types.
 
 ### `LIST`:list
-Option `list` of type `LIST` contains all allowed types in the attr list. If only one type is passed, only that type would strictly be checked.
+Mandatory argument `list` of type `LIST` contains all allowed types in the attr list. If only one type is passed, only that type would strictly be checked.
 
 ### `LIST`:min
-Option `min` of type `LIST` specifies minimum number of values required in the attr list. If not specified, empty lists would be accepted as valid value to the attr.
+Optional argument `min` of type `LIST` specifies minimum number of values required in the attr list. If not specified, empty lists would be accepted as valid value to the attr.
 
 ### `LIST`:max
-Option `max` of type `LIST` specifies maximum number of values in the attr list.
+Optional argument `max` of type `LIST` specifies maximum number of values in the attr list.
 
 ## `KV_DICT`
 Type `KV_DICT` is used to define attr that accepts any Python `dict` with specific `key`, `val` types. e.g. `KV_DICT` attr can be set to
@@ -95,19 +95,19 @@ ATTR.KV_DICT(
 to accept any `dict` with its keys as strings, and values as integers. Further more, there are more options available to control `KV_DICT` type.
 
 ### `KV_DICT`:key
-Option `key` of type `KV_DICT` specifies accepted type of the keys of Python `dict` to be used as value of the attr. Note, since values of attrs with type `KV_DICT` would be translated into JSON objects when passed to MongoDB, option `key` does only accept strings as keys to objects, thus, `KV_DICT`-typed attrs with option `key` other than `STR`, `LITERAL` will raise `InvalidAttrTypeArgException` at time of Nawah app launch.
+Mandatory argument `key` of type `KV_DICT` specifies accepted type of the keys of Python `dict` to be used as value of the attr. Note, since values of attrs with type `KV_DICT` would be translated into JSON objects when passed to MongoDB, `Type Attr Arg key` does only accept strings as keys to objects, thus, `KV_DICT`-typed attrs with `key` other than `STR`, `LITERAL` will raise `InvalidAttrTypeArgException` at time of Nawah app launch.
 
 ### `KV_DICT`:val
-Option `val` of type `KV_DICT` specifies accepted type of the values of Python `dict` to be used as value of the attr.
+Mandatory argument `val` of type `KV_DICT` specifies accepted type of the values of Python `dict` to be used as value of the attr.
 
 ### `KV_DICT`:min
-Option `min` of type `KV_DICT` specifies minimum number of items of Python `dict` to be used as value of the attr. This option is optional. Not setting it will not force any minimum which allow empty Python `dict` to be accepted.
+Optional argument `min` of type `KV_DICT` specifies minimum number of items of Python `dict` to be used as value of the attr. Not setting it will not force any minimum which allow empty Python `dict` to be accepted.
 
 ### `KV_DICT`:max
-Option `max` of type `KV_DICT` specifies maximum number of items of Python `dict` to be used as value of the attr. This option is optional. Not setting it will not force any maximum which would allow any number of items.
+Optional argument `max` of type `KV_DICT` specifies maximum number of items of Python `dict` to be used as value of the attr. Not setting it will not force any maximum which would allow any number of items.
 
 ### `KV_DICT`:req
-Option `max` of type `KV_DICT` specifies the required keys of Python `dict` as list of strings. This option allows developers to have free-form Python `dict` as values to `KV_DICT`, but still maintain required keys. e.g.
+Optional argument `reg` of type `KV_DICT` specifies the required keys of Python `dict` as list of strings. This argument allows developers to have free-form Python `dict` as values to `KV_DICT`, but still maintain required keys. e.g.
 ```python
 ATTR.KV_DICT(
 	key=ATTR.STR(),
@@ -141,13 +141,13 @@ ATTR.TYPED_DICT(dict={
 to accept only `dict` that has the keys `event`, `trigger`, and `notes` along the correct type for every attribute.
 
 ### `TYPED_DICT`:dict
-Option `dict` of type `TYPED_DICT` specifies the keys which are expected to be existing in Python `dict` used as value to the attr, along the types of each key.
+Mandatory argument `dict` of type `TYPED_DICT` specifies the keys which are expected to be existing in Python `dict` used as value to the attr, along the types of each key.
 
 ## `LITERAL`
-Type `LITERAL` is used to define set of options for the attr. Options are passed as option `literal`, a list of strings, integers, floats, or booleans. Any other value not from `literal` option list would be considered wrong value. e.g. `Shipment` module with attr `status` can have the type `LITERAL` as `ATTR.LITERAL(literal=['at-warehouse', 'shipped', 'received', 'cancelled'])` to only accept either of the values supplied in `literal` option.
+Type `LITERAL` is used to define set of options for the attr. Options are passed as argument `literal`, a list of strings, integers, floats, or booleans. Any other value not from `literal` list would be considered wrong value. e.g. `Shipment` module with attr `status` can have the type `LITERAL` as `ATTR.LITERAL(literal=['at-warehouse', 'shipped', 'received', 'cancelled'])` to only accept either of the values supplied in `literal` option.
 
 ### `LITERAL`:literal
-Option `literal` of type `LITERAL` contains all allowed values for the attr. Values can be strings, integers, floats, or booleans.
+Mandatory argument `literal` of type `LITERAL` contains all allowed values for the attr. Values can be strings, integers, floats, or booleans.
 
 ## `UNION`
 Type `UNION` is used to define an attr accepting multiple types. The attr value would be checked against all the supplied types and accept at first matching type. e.g. `Post` module with attr `attachment` can have the type `UNION` as:
@@ -160,7 +160,7 @@ ATTR.UNION(union=[
 to allow it to only accept attachment of either of the types supplied in `union` option.
 
 ### `UNION`:union
-Option `union` of type `UNION` contains all allowed types for the attr.
+Mandatory argument `union` of type `UNION` contains all allowed types for the attr.
 
 ## `TYPE`
 Developers can define Nawah apps-specific attrs types as part of [Package Config](/reference/package.md#config).
