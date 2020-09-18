@@ -31,7 +31,7 @@ class BlogComment(BaseModule):
             ]
         },
         'create': {
-            'permissions': [PERM(privilege='create', doc_mod={'status':'pending', 'status_note':''})],
+            'permissions': [PERM(privilege='create'), PERM(privilege='*', doc_mod={'status':'pending', 'status_note':''})],
         },
         'update': {
             'permissions': [PERM(privilege='update')],
@@ -81,9 +81,67 @@ That should be it. A lot of more cases could arise once you increase the level o
 * You, as `ADMIN`, shall also be able to use the second `query_args` set to get all comments that are either of `pending, deleted` by passing `status` in `Query`. Note that passing `Query` as `[{'status': 'approved'}]` without `blog` would result in error: `Could not match query with any of the required query_args. Failed sets:['blog': Missing], ['status': Invalid]"` which explains your call failed because it failed to meet either of the `query_args` sets.
 * For non-privileged users, as `ANON` users, They would still be able to use either of the two `query_args` sets, but here comes `query_mod` from the `Permission Set` that allows non-privileged users to access method `read`--If non-privileged user attempts a malicious call by calling `blog_comment/read` with `Query` as `[{'status': 'pending'}]`, the call would pass second `query_args` set requirements, but `query_mod` of `Permission Set` would modify call `Query`, inserting `{'status': 'approved'}`, which would then make final `Query` that is reaching method `read` set as `[{'status': 'pending'}, {'status': 'approved'}]`, which would effectively result in no values at all because `BlogComment` docs can't match both the conditions `'status' is 'pending' AND 'status' is 'approved'`.
 
-Congratulations! You just created secure API endpoint without writing single line of code checking users permissions! This is integral part of Nawah, which leaves developers to architect the whole app before even needing to write any code. 
+Congratulations! You just created secure API endpoint without writing single line of code checking users permissions! This is integral part of Nawah, which leaves developers to architect the whole app before even needing to write any code.
+
+##### `create`
+Similar to using `Query Modifier` or `query_mod` in method `read` to modify `Query` on specific `Permission Set`, method `create` is using another aspect which is `Doc Modifier` or `doc_mod` which does the same but to call `doc`.
+
+As you can tell already, method `create` is the endpoint to be used to add comments to current blog posts, this asserts it will be used either by you to comment on the blog posts with additional follow-up comments, or by your visitors. In this case, you expect your visitors comments to have `status` set to `pending`, while not for you. The combination of the two `Permissions Sets` on method `create` replicate this behaviour, again, without the need to write any single line verifying user's privileges.
 
 ### Comment front-end
+
+> The approach you will use to implement comments functionality afterwards is very subjective and there are endless approaches, but to maintain clean, high-performing, `hello world`-base the following approach was selected.
+
+Now that your app includes `BlogComment` module, it is time to add the functionality to your front-end. To begin, let's think the choices:
+1. Blog posts shall be shown on the front-end without comments initially to limit unnecessary footprint on clients memory, as well as computing at endpoint-side.
+2. A button indicating the action to load comments should be present at the end of every blog post.
+3. Once the button is clicked or tapped, it should start the action to load comments and get those comments to show, replacing the button.
+
+Easy, isn't it? To implement this approach without going more classical by putting all the code back into the class, you will:
+1. Within `HomeComponent` class, Define an object that is placeholder dictionary mapping blog posts `_id` to `Observable` that is a call to `blog_comment/read` endpoint.
+2. Create a method that creates call `Observable` for any needed blog post.
+3. Update the template to make use of the previous two elements.
+
+In code, this means the following:
+```typescript
+//   This is being added after:
+//   blogs$: Observable<Res<any>> = this.nawah.call({
+//     endpoint: 'blog/read'
+//   });
+
+  comments$: {
+    [key: string;]: Observable<Res<any>>
+  } = {}
+
+//   This is being added after:
+//   constructor(private nawah: NawahService) { }
+
+  function loadComments(blog_id: string): void { // Best Practice Note: This is not snake_case, but since unique attribute of MongoDB is '_id' the underscore is skipping capitalisation
+    this.comments$[blog_id] = this.nawah.call({
+      endpoint: 'blog_comment/read',
+      query: [{ blog: blog_id }]
+    });
+  }
+```
+and for `home.component.html`:
+```html
+<!--
+    This is being add after:
+        <p class="blog-post-meta">{{ blog.create_time }}</p>
+
+        {{ blog.content.en_AE }}
+    
+    and, before:
+    </div> /.blog-post
+-->
+
+        <div *ngIf="comments$[blog._id]">
+            <div *ngFor="let comment of (comments$[blog._id] | async)?.args.docs" class="card">
+                {{ comment.content }}
+            </div>
+        </div>
+        <button *ngIf="comments$[blog._id]" class="btn btn-secondary" (click)="loadComments(blog._id)">Load Comments</button>
+```
 
 ## Next
 This finalises the tutorial. Next, is expanding this blog app into a magazine that allows users to register and subscribe to categories and tags, and perhaps contribute to the magazine.
