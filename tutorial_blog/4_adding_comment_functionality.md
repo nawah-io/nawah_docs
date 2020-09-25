@@ -110,13 +110,13 @@ In code, this means the following:
 //   });
 
   comments$: {
-    [key: string;]: Observable<Res<any>>
+    [key: string]: Observable<Res<any>>
   } = {}
 
 //   This is being added after:
 //   constructor(private nawah: NawahService) { }
 
-  function loadComments(blog_id: string): void { // Best Practice Note: This is not snake_case, but since unique attribute of MongoDB is '_id' the underscore is skipping capitalisation
+  loadComments(blog_id: string): void { // Best Practice Note: This is not snake_case, but since unique attribute of MongoDB is '_id' the underscore is skipping capitalisation
     this.comments$[blog_id] = this.nawah.call({
       endpoint: 'blog_comment/read',
       query: [{ blog: blog_id }]
@@ -140,7 +140,7 @@ and for `home.component.html`:
                 {{ comment.content }}
             </div>
         </div>
-        <button *ngIf="comments$[blog._id]" class="btn btn-secondary" (click)="loadComments(blog._id)">Load Comments</button>
+        <button *ngIf="!comments$[blog._id]" class="btn btn-secondary" (click)="loadComments(blog._id)">Load Comments</button>
 ```
 
 ## Next
