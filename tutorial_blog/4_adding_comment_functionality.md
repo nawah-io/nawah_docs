@@ -143,6 +143,175 @@ and for `home.component.html`:
         <button *ngIf="!comments$[blog._id]" class="btn btn-secondary" (click)="loadComments(blog._id)">Load Comments</button>
 ```
 
+Now that you can show comments on, you need to allow users to add comments to show them. After `Load Comments` button element in your template and the following sample `form`:
+```html
+<!--
+    This is being add after:
+        <button *ngIf="!comments$[blog._id]" class="btn btn-secondary" (click)="loadComments(blog._id)">Load Comments</button>
+-->
+
+				<form (submit)='createComment(blog._id)' ngNativeValidate>
+					<h4>Add your Comment</h4>
+					<label for="name" class="visually-hidden">Name</label>
+					<input type="text" name="name" id="name" class="form-control" minlength="3"
+						[(ngModel)]="comment.name" required>
+					<label for="email" class="visually-hidden">Name</label>
+					<input type="email" name="email" id="email" class="form-control" [(ngModel)]="comment.email"
+						required>
+					<label for="content">Content</label>
+					<textarea name="content" id="content" cols="30" rows="4" class="form-control" minlength="18"
+						[(ngModel)]="comment.content" required></textarea>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+```
+and, in your component code:
+```typescript
+
+// This is being added after:
+// 	comments$: { ...
+
+	comment: {
+		name: string;
+		email: string;
+		content: string;
+	} = {
+			name: '',
+			email: '',
+			content: ''
+		};
+
+// This is being added after:
+// 	loadComments(blog_id: string): void { ...
+
+	createComment(blog_id: string): void {
+		this.nawah.call({
+			endpoint: 'blog_comment/create',
+			doc: { ...this.comment, blog: blog_id }
+		}).subscribe({
+			next: (res) => {
+				alert(res.msg);
+			},
+			error: (res: Res<Doc>) => {
+				alert(res?.msg);
+			}
+		});
+	}
+```
+Did you notice the fancy trick? As part of `BlogComment` you have `blog` which links to the blog post the comment is for. It is populating by passing it from `submit` event in template to `createComment` method, which is then taking `comment` object and extending it with `blog` attr. Also, for this `form` you would notice the attribute `ngNativeValidate` which forces usage of HTML5 inputs built-in validators to be activated, for instance, this would check the following:
+1. Name `input` was set to minimum length of 3 characters.
+2. Email `input` was set to be checked against valid value.
+3. Content `textarea` was set to minimum length of 18 characters.
+
+Now that you can write comments, you would need to be able to approve or delete comments. This tutorial would provide you with basic implementation that is not ideal for production apps, but can be extended later for better developer experience. To begin, generate new admin component as following:
+```bash
+ng g c admin-comment-pending-list
+```
+and, update routes as:
+```typescript
+  // This is being added after:
+  // { path: 'blog-edit/:_id', component: AdminBlogEditComponent },
+
+  { path: 'comment-list', component: AdminCommentPendingListComponent },
+```
+and, in your component class use the following:
+```typescript
+export class AdminCommentPendingListComponent implements OnInit {
+
+	comments: Array<Doc> = [];
+
+	constructor(private nawah: NawahService) { }
+
+	ngOnInit() {
+		this.readComments();
+	}
+
+	readComments(): void {
+		this.nawah.call({
+			endpoint: 'blog_comment/read',
+			query: [{ status: 'pending' }],
+			awaitAuth: true
+		}).subscribe({
+			next: (res) => {
+				this.comments = res.args.docs;
+			},
+			error: (err: Res<Doc>) => {
+				alert(`Unexpected error occurred: ${err.msg || err}`);
+			}
+		});
+	}
+
+	approveComment(_id: string): void {
+		if (confirm('Are you sure you want to approve this comment?')) {
+			let note: string = prompt('Status note?', '');
+			this.nawah.call({
+				endpoint: 'blog_comment/update',
+				query: [{
+					_id: _id
+				}],
+				doc: {
+					status: 'approved',
+					status_note: note,
+				}
+			}).subscribe({
+				next: (res) => {
+					this.readComments();
+				},
+				error: (err: Res<Doc>) => {
+					alert(`Unexpected error occurred: ${err.msg || err}`);
+				}
+			});
+		}
+	}
+
+	deleteComment(_id: string): void {
+		if (confirm('Are you sure you want to delete this comment?')) {
+			let note: string = prompt('Status note?', '');
+			this.nawah.call({
+				endpoint: 'blog_comment/update',
+				query: [{
+					_id: _id
+				}],
+				doc: {
+					status: 'deleted',
+					status_note: note,
+				}
+			}).subscribe({
+				next: (res) => {
+					this.readComments();
+				},
+				error: (err: Res<Doc>) => {
+					alert(`Unexpected error occurred: ${err.msg || err}`);
+				}
+			});
+		}
+	}
+
+}
+```
+
+Notice how similar it is to `Blog List`, however, the following essential differences are there:
+1. Call to endpoint `blog_comment/read` is using `awaitAuth` with value set to `true`, this forces the call to be in queue until user is authorised. Why is this needed? If you recall from earlier discussion on `Permissions Sets`, non-authenticated users can't access non-approved comments. When you navigate to `/admin/comment-list` route you would be calling `blog_comment/read` at the same time `AdminContainer` is attempting to re-authenticate you which would result in the call be received at endpoint and dealt with as non-authenticated. Adding `awaitAuth` resolves this issue.
+2. The call is reading all pending comments, meaning once you resolve the comment status it will be gone from this list.
+3. Instead of one action, you have two actions which either approves or deletes the comment.
+4. Action `deleteComment` doesn't really delete the comment but updates the comment `status` attr value to `deleted`, that's why in both the methods you have the endpoint `blog_comment/update`.
+
+Now that you are cleared on some logic, copy over the template from `Blog List` page and instead of having 4 columns for the table, make them five as following:
+1. Name.
+2. Email.
+3. Content
+4. Create Time.
+5. Operations.
+
+For the operations columns, replace previous with:
+```html
+<button class="btn btn-success" (click)="approveComment(comment._id)">Approve</button>
+<button class="btn btn-danger" (click)="deleteComment(comment._id)">Delete</button>
+```
+also, don't forget to replace the table body loop according to the earlier values.
+
+Now, navigate to `/admin/comment-list` and enjoy managing your blog posts comments.
+
+
 ## Next
 This finalises the tutorial. Next, is expanding this blog app into a magazine that allows users to register and subscribe to categories and tags, and perhaps contribute to the magazine.
 

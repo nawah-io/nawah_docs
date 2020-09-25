@@ -148,13 +148,13 @@ which creates an `Observable`. As you can see, the only defined value in `callAr
         From the Firehose
       </h3>
 -->
-      <div *ngFor="let blog of (blogs$ | async)?.args.docs" class="blog-post">
+      <article *ngFor="let blog of (blogs$ | async)?.args.docs" class="blog-post">
         <h2 class="blog-post-title">{{ blog.title.en_AE }}</h2>
         <p class="blog-post-meta">{{ blog.create_time }}</p>
 
         {{ blog.content.en_AE }}
 
-      </div><!-- /.blog-post -->
+      </article><!-- /.blog-post -->
 ```
 
 What you see here is template subscribing to `blogs$ Observable`, which gets the SDK to call your app API and return the results in the same structure you came across earlier in Nawah Sandbox. However, this time you are binding the results to template for-loop which allows you to extract individual blog posts and show them. Since, you only have one blog post you will only get one in the page. Notice, 
@@ -555,8 +555,70 @@ Let's break it down:
 You can now delete previous blog posts, create new fancy ones, and check them on your front-end.
 
 #### Editing Blog Posts
-> WIP
+> ⚠ Warning: This section does violate DRY approach as you will be implementing edit feature without re-using current elements. This is plain anti best practice. Make sure to consider better approach for production apps.
 
+Now that you began writing your blog posts, you probably want to update some of them at some point. For this purpose you will reuse your New Blog section of your frontend. Begin with generating the component:
+```bash
+ng g c admin-blog-edit
+```
+then, update `routes`, adding:
+```typescript
+  // This is being added after:
+  // { path: 'blog-list', component: AdminBlogListComponent },
+
+  { path: 'blog-edit/:_id', component: AdminBlogEditComponent },
+```
+
+As you can tell from the route, you will be passing the blog post `_id` to `AdminBlogEditComponent` which then shall process it and get it from the endpoint and prepares it for editing. To achieve this, copy over your `AdminBlogNewComponent` but replace the following changed portion:
+```typescript
+export class AdminBlogEditComponent implements OnInit {
+
+	// doc: { ...
+
+	// msg: { ...
+
+
+	constructor(private nawah: NawahService, private route: ActivatedRoute) { }
+
+	ngOnInit() {
+		this.nawah.call({
+			endpoint: 'blog/read',
+			query: [{ _id: this.route.snapshot.params._id }]
+		}).subscribe({
+			next: (res: Res<Doc>) => {
+				this.doc.title = res.args.docs[0].title;
+				this.doc.content = res.args.docs[0].content;
+			}
+		});
+	}
+
+	updateBlogPost(): void {
+		this.msg = {};
+		this.nawah.call({
+			endpoint: 'blog/update',
+			query: [{ _id: this.route.snapshot.params._id }],
+			doc: this.doc
+		}).subscribe({
+			next: (res) => {
+				this.msg = {
+					type: 'success',
+					content: res.msg
+				};
+			},
+			error: (res: Res<Doc>) => {
+				this.msg = {
+					type: 'fail',
+					content: res.msg || (res as any)
+				};
+			}
+		});
+	}
+
+}
+```
+and, copy over the template from the earlier component but make sure to change the title to `Edit Blog Post`, and change the method bound to `submit` event according to your class method name.
+
+To test this, navigate to `/admin/blog-list` and click `Edit` button for any of your blog posts, you will be routed and your blog post title and content in Arabic and English will be there for you to update it.
 
 ## Next
 Now that you have your blog available for your audience, you might like to provide them with an interactive space, where they can comment and reply to comments. Next, you will create `Comment` module which provides this functionality.
