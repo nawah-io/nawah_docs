@@ -135,12 +135,17 @@ and for `home.component.html`:
     </div> /.blog-post
 -->
 
-        <div *ngIf="comments$[blog._id]">
-            <div *ngFor="let comment of (comments$[blog._id] | async)?.args.docs" class="card">
-                {{ comment.content }}
-            </div>
-        </div>
-        <button *ngIf="!comments$[blog._id]" class="btn btn-secondary" (click)="loadComments(blog._id)">Load Comments</button>
+		<br>
+		<div *ngIf="comments$[blog._id] | async as blogComments$">
+			<ng-container *ngIf="blogComments$.args.count">
+				<div *ngFor="let comment of blogComments$.args.docs" class="card">
+					{{ comment.content }}
+				</div>
+			</ng-container>
+			<div *ngIf="!blogComments$.args.count" class="alert alert-info">No comments</div>
+		</div>
+		<button *ngIf="!comments$[blog._id]" class="btn btn-secondary" (click)="loadComments(blog._id)">Load
+			Comments</button>
 ```
 
 Now that you can show comments on, you need to allow users to add comments to show them. After `Load Comments` button element in your template and the following sample `form`:
