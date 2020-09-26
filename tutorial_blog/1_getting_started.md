@@ -7,7 +7,7 @@ To start with using Nawah you need to have:
 1. [Python](https://www.python.org/) 3.8
 2. [MongoDB](https://www.mongodb.com/) 4.2+
 
-You can install the previous prerequisites using your operating system package manage, or from their website.
+You can install the previous prerequisites using your operating system package manage or from their website.
 
 ### Using `code-server`
 > _Continue if you prefer using `docker`._
@@ -33,7 +33,7 @@ To create new project, open up terminal and run*:
 ```bash
 nawah create my_awesome_blog [/path/to/project] --default-config
 ```
-The argument `/path/to/project` is optional. If you skip it, it will use the current working directory. While argument `--default-config` is passed to create a new app with default config. In future, once you are more familiar with Nawah [Config Attrs](/api/config_attrs), you can create a new app without passing this argument which allows you to customise the app config at time of creation.
+The argument `/path/to/project` is optional. If you skip it, it will use the current working directory. While argument `--default-config` is passed to create a new app with default config. In future, once you are more familiar with Nawah [App Config Attrs](/reference/app.md), you can create a new app without passing this argument which allows you to customise the app config at time of creation.
 
 ### Exploring App Project
 The new app project folder has the following structure:
@@ -99,7 +99,7 @@ To being, follow either of these steps based on the applicable condition:
   * Change the value `mongodb://localhost` on line #11 of the file to the connection string. 
   * Save your changes.
   * Your environnement will be `dev_local`. Keep this in mind and skip to next step.
-* **You are using `code-server` image, or you prefer to begin with `docker-compose`**:
+* **You are using `code-server` image or you prefer to begin with `docker-compose`**:
   * Your environnement will be `dev_server`. Keep this in mind and skip to next step.
 
 Now that we have confirmed app configs are ready for connecting to your MongoDB instance, and we know the environnement we will use, we can attempt to launch our app--Open up terminal and change your directory to app directory, then run (replacing `ENV_NAME` with the environnement name you picked from the previous step):
