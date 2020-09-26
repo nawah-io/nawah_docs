@@ -33,7 +33,7 @@ This is home to docs on using [Nawah CLI](https://github.com/nawah-io/nawah_cli)
     * EXTN
     * CACHE
     * ANALYTIC
-* Testing Workflow
+* Test Workflow
   * Writing Tests for Personal Blog App
   * Integrating Tests with Continuous Integration
   * Testing Controllers:
