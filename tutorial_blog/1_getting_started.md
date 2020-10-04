@@ -142,7 +142,7 @@ If you weren't able to launch the app, you probably have one of the following is
 ## Next
 Now that you have your first Nawah app ready and proof-tested to launch, you need to start writing modules that allow you to add functionalities to the app. Next, you will learn about creating a blog module that represents the controller and model for a blog post in the app.
 
-[Continue to: 2. Writing Blog Module](./writing_blog_module.md)
+[Continue to: 2. Writing Blog Module](./2_writing_blog_module.md)
 
 
 \* Square brackets in commands refer to optional or variable parts of the command. For instance, you might need to use `python`, `python3`, or `python3.8` to launch `Python 3.8` on your computer.

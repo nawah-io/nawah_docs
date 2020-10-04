@@ -623,4 +623,4 @@ To test this, navigate to `/admin/blog-list` and click `Edit` button for any of 
 ## Next
 Now that you have your blog available for your audience, you might like to provide them with an interactive space, where they can comment and reply to comments. Next, you will create `Comment` module which provides this functionality.
 
-[Continue to: 4. Adding Comment Functionality](./adding_comment_functionality.md)
+[Continue to: 4. Adding Comment Functionality](./4_adding_comment_functionality.md)
