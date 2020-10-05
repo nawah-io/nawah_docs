@@ -421,6 +421,6 @@ Try making `blog/read` call again. You will get the same response. This is expec
 ## Next
 Now that you have your app incorporating the core blog functionality, you will begin with building front-end that allow you to present your blog posts to your audience.
 
-[Continue to: 3. Building App Front-end](./building_app_front_end.md)
+[Continue to: 3. Building App Front-end](./3_building_app_front_end.md)
 
 \* Even `ADMIN` user has access limitations--Some methods are of `system-only` nature, which is a naming scheme indicating these methods are available for sporting internal features of Nawah framework. In Nawah naming convention we use `__sys` as value of `privilege` argument of Permission Set to indicate this is a `system-only` method.
